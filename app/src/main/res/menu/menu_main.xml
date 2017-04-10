@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="no.designsolutions.livenotes.MainActivity">
+
+    <item
+        android:id="@+id/select_file"
+        android:orderInCategory="200"
+        android:title="@string/select_file"
+        app:showAsAction= "always"
+        android:icon="@drawable/ic_select_file"/>
+
+
+</menu>

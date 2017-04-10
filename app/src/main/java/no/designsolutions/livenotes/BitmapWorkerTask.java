@@ -14,6 +14,7 @@ import java.lang.ref.WeakReference;
  * Created by Daniel on 15.09.2015.
  */
 //comment
+
 public class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
     final static int TARGET_WIDTH = 60;
     final static int TARGET_HEIGHT = 60;

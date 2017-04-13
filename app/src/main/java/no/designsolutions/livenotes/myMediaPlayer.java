@@ -31,17 +31,15 @@ import no.designsolutions.livenotes.util.PlayerService;
 public class myMediaPlayer extends AppCompatActivity {
 
     static final int FILE_SELECT_CODE = 2;
-    static ImageButton play;
-    static TextView TLTextView;
-    static TextView timeText;
-    static SeekBar seekBar;
+    private ImageButton play;
+    private TextView TLTextView;
+    private TextView timeText;
+    private SeekBar seekBar;
     private Handler seekHandler = new Handler();
-    static TextView titleText;
+    private TextView titleText;
     private MediaPlayer mPlayer;
-    private static String cFile;
     private static String cTitle;
 
-    private PlayerService playerService;
     private boolean mBound = false;
 
     private ServiceConnection mConnection = new ServiceConnection() {
@@ -50,14 +48,14 @@ public class myMediaPlayer extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             PlayerService.playerServiceBinder binder = (PlayerService.playerServiceBinder) service;
-            playerService = binder.getService();
+            PlayerService playerService = binder.getService();
             mBound = true;
             mPlayer = playerService.getmPlayer();
 
             mPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
                 @Override
                 public void onSeekComplete(MediaPlayer mp) {
-                    seekUpdatetion(mp.isPlaying());
+                    updateSeeker(mp.isPlaying());
                 }
             });
 
@@ -78,13 +76,13 @@ public class myMediaPlayer extends AppCompatActivity {
                         play.setImageResource(R.drawable.ic_play_button);
                         play.setBackgroundColor(Color.TRANSPARENT);
                         Toast.makeText(context, "Pause", Toast.LENGTH_LONG).show();
-                        seekUpdatetion(mPlayer.isPlaying());
+                        updateSeeker(mPlayer.isPlaying());
                     } else {
                         mPlayer.start();
                         play.setImageResource(R.drawable.ic_pause_button);
                         play.setBackgroundColor(Color.TRANSPARENT);
                         Toast.makeText(context, "Play", Toast.LENGTH_LONG).show();
-                        seekUpdatetion(mPlayer.isPlaying());
+                        updateSeeker(mPlayer.isPlaying());
                     }
 
                 }
@@ -137,11 +135,11 @@ public class myMediaPlayer extends AppCompatActivity {
                 if (mPlayer.isPlaying()) {
                     play.setImageResource(R.drawable.ic_pause_button);
                     play.setBackgroundColor(Color.TRANSPARENT);
-                    seekUpdatetion(mPlayer.isPlaying());
                 } else {
                     play.setImageResource(R.drawable.ic_play_button);
                     play.setBackgroundColor(Color.TRANSPARENT);
                 }
+                updateSeeker(mPlayer.isPlaying());
             }
 
 
@@ -150,7 +148,7 @@ public class myMediaPlayer extends AppCompatActivity {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mBound = false;
-            Toast.makeText(getApplicationContext(), "Service disconnected", Toast.LENGTH_LONG);
+            Toast.makeText(getApplicationContext(), "Service disconnected", Toast.LENGTH_LONG).show();
         }
     };
 
@@ -170,7 +168,6 @@ public class myMediaPlayer extends AppCompatActivity {
             if (mPlayer.isPlaying()) {
                 play.setImageResource(R.drawable.ic_pause_button);
                 play.setBackgroundColor(Color.TRANSPARENT);
-                seekUpdatetion(mPlayer.isPlaying());
             } else {
                 play.setImageResource(R.drawable.ic_play_button);
                 play.setBackgroundColor(Color.TRANSPARENT);
@@ -185,10 +182,10 @@ public class myMediaPlayer extends AppCompatActivity {
 
 
             TLTextView.setText(totalLengthString);
-            seekUpdatetion(mPlayer.isPlaying());
+            updateSeeker(mPlayer.isPlaying());
         } else {
-            Intent intent = new Intent (getApplicationContext(),PlayerService.class);
-            bindService(intent,mConnection,Context.BIND_AUTO_CREATE);
+            Intent intent = new Intent(getApplicationContext(), PlayerService.class);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
     }
 
@@ -237,20 +234,19 @@ public class myMediaPlayer extends AppCompatActivity {
         });
 
 
-
     }
 
     Runnable run = new Runnable() {
         @Override
         public void run() {
             if (mBound) {
-                seekUpdatetion(mPlayer.isPlaying());
+                updateSeeker(mPlayer.isPlaying());
             }
         }
     };
 
 
-    private void seekUpdatetion(boolean isPlaying) {
+    private void updateSeeker(boolean isPlaying) {
 
         int curPos = mPlayer.getCurrentPosition();
         long h = TimeUnit.MILLISECONDS.toHours(curPos);
@@ -298,7 +294,7 @@ public class myMediaPlayer extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == FILE_SELECT_CODE && resultCode == RESULT_OK && data != null) {
 
-            cFile = data.getStringExtra("filepath");
+            String cFile = data.getStringExtra("filepath");
             cTitle = data.getStringExtra("songtitle");
             titleText.setText(cTitle);
 
@@ -306,7 +302,7 @@ public class myMediaPlayer extends AppCompatActivity {
 
             //Initialize mPlayer
 
-            Intent intent = new Intent(getApplicationContext(),PlayerService.class);
+            Intent intent = new Intent(getApplicationContext(), PlayerService.class);
             startService(intent);
 
             try {
@@ -320,7 +316,7 @@ public class myMediaPlayer extends AppCompatActivity {
             }
 
             seekBar.setMax(mPlayer.getDuration());
-            seekUpdatetion(mPlayer.isPlaying());
+            updateSeeker(mPlayer.isPlaying());
         }
 
     }

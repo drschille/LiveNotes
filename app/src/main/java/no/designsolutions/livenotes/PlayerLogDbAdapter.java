@@ -1,26 +1,18 @@
 package no.designsolutions.livenotes;
 
 
-import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.PermissionChecker;
-import android.support.v4.os.IResultReceiver;
-import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by Daniel on 03.01.2020.

@@ -10,7 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +19,14 @@ import android.widget.TextView;
 
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class MyViewAdapter extends RecyclerView.Adapter<MyViewAdapter.MyViewHolder> {
 
 
-    List<RecyclerViewMediaItem> data = Collections.emptyList();
+    List<RecyclerViewMediaItem> data;
     private LayoutInflater inflater;
     private SelectFileActivity myContext;
 

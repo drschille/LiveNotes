@@ -39,7 +39,7 @@ class TimestampConverters {
     fun fromStringToTimestamp(value: String?): LinkedAudioTimeStamp {
         val stringArray = value?.split(" ")
         val time = stringArray!![0].toLong()
-        val file = File("media/${stringArray!![1]}")
+        val file = File("media/${stringArray[1]}")
         return LinkedAudioTimeStamp(time, file)
     }
 

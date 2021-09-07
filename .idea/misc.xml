@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Daniel/AndroidStudioProjects/LiveNotes/app/src/main/res/drawable/ic_baseline_menu_book_32.xml" value="0.246875" />
+        <entry key="..\:/Users/Daniel/AndroidStudioProjects/LiveNotes/app/src/main/res/drawable/ic_baseline_notebook.xml" value="0.246875" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/LiveNotes/app/src/main/res/layout/activity_main.xml" value="0.23072916666666668" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/LiveNotes/app/src/main/res/layout/activity_media_player.xml" value="0.23072916666666668" />
         <entry key="..\:/Users/Daniel/AndroidStudioProjects/LiveNotes/app/src/main/res/layout/activity_notebooks.xml" value="0.23072916666666668" />

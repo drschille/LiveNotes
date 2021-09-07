@@ -22,18 +22,18 @@ import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.List;
 
-public class myAdapter extends RecyclerView.Adapter<myAdapter.myViewHolder> {
+public class MyViewAdapter extends RecyclerView.Adapter<MyViewAdapter.MyViewHolder> {
 
 
-    List<RecyclerViewItem> data = Collections.emptyList();
+    List<RecyclerViewMediaItem> data = Collections.emptyList();
     private LayoutInflater inflater;
-    private MainActivity myContext;
+    private SelectFileActivity myContext;
 
-    public myAdapter(Context context, List<RecyclerViewItem> data) {
+    public MyViewAdapter(Context context, List<RecyclerViewMediaItem> data) {
         inflater = LayoutInflater.from(context);
         this.data = data;
 
-        myContext = (MainActivity) context;
+        myContext = (SelectFileActivity) context;
     }
 
     public static boolean checkBitmapWorkerTask(String imagePath, ImageView imageView) {
@@ -61,15 +61,15 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.myViewHolder> {
     }
 
     @Override
-    public myAdapter.myViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.song_item, parent, false);
-        return new myViewHolder(view);
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View view = inflater.inflate(R.layout.media_file_item, parent, false);
+        return new MyViewHolder(view);
     }
 
     @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
-    public void onBindViewHolder(myAdapter.myViewHolder holder, final int position) {
-        final RecyclerViewItem current = data.get(position);
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
+        final RecyclerViewMediaItem current = data.get(position);
         holder.title.setText(current.title);
         // holder.icon.setImageResource(R.drawable.ic_launcher);
 
@@ -77,7 +77,7 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.myViewHolder> {
 
         placeHolderBitmap = BitmapFactory.decodeResource(holder.icon.getResources(), R.drawable.ic_file_icon);
 
-        Bitmap bitmap = myFragment.getBitmapFromMemoryCache(current.path);
+        Bitmap bitmap = FileListFragment.getBitmapFromMemoryCache(current.path);
         if (bitmap != null) {
             holder.icon.setImageBitmap(bitmap);
         } else if (checkBitmapWorkerTask(current.path, holder.icon)) {
@@ -94,7 +94,7 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.myViewHolder> {
             @Override
             public void onClick(View v) {
 
-                //   MediaPlayer mp = myMediaPlayer.mPlayer;
+                //   MediaPlayer mp = MyMediaPlayer.mPlayer;
                 //   File myFile = new File(current.path);
                 Intent resultsData = myContext.getIntent();
                 resultsData.putExtra("songtitle", current.title);
@@ -139,15 +139,15 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.myViewHolder> {
         }
     }
 
-    class myViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         ImageView icon;
 
-        public myViewHolder(View itemView) {
+        public MyViewHolder(View itemView) {
 
             super(itemView);
-            title = (TextView) itemView.findViewById(R.id.listItemText);
-            icon = (ImageView) itemView.findViewById(R.id.listIcon);
+            title = itemView.findViewById(R.id.listItemText);
+            icon = itemView.findViewById(R.id.listIcon);
         }
     }
 

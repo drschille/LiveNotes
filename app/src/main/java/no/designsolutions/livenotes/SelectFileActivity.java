@@ -1,9 +1,7 @@
 package no.designsolutions.livenotes;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.content.Intent;
-import android.media.MediaPlayer;
+
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -12,7 +10,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 
-public class MainActivity extends AppCompatActivity {
+public class SelectFileActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

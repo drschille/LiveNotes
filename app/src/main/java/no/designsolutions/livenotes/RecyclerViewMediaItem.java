@@ -7,8 +7,8 @@ import android.media.MediaMetadataRetriever;
 /**
  * Created by Daniel on 28.08.2015.
  */
-public class RecyclerViewItem {
-    String filename;
+class RecyclerViewMediaItem {
+    private String filename;
     String title;
     String path;
     String artist;
@@ -16,11 +16,11 @@ public class RecyclerViewItem {
 
     MediaMetadataRetriever metadataRetriever;
 
-    RecyclerViewItem(String sourcePath) {
+    RecyclerViewMediaItem(String sourcePath) {
         metadataRetriever = new MediaMetadataRetriever();
         metadataRetriever.setDataSource(sourcePath);
         path = sourcePath;
-        filename = sourcePath.split("\\/")[sourcePath.split("\\/").length -1]
+        filename = sourcePath.split("/")[sourcePath.split("/").length -1]
                 .split("\\.")[0];
         getMetadata();
     }

@@ -4,10 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.widget.ImageView;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 
 /**
@@ -56,10 +54,10 @@ public class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
         }
         if (bitmap != null && imageViewWeakReference != null) {
             ImageView imageView = imageViewWeakReference.get();
-            BitmapWorkerTask bitmapWorkerTask = myAdapter.getBitmapWorkerTask(imageView);
-            if (this == bitmapWorkerTask && imageView != null) {
+            BitmapWorkerTask bitmapWorkerTask = MyViewAdapter.getBitmapWorkerTask(imageView);
+            if (this == bitmapWorkerTask) {
                 imageView.setImageBitmap(bitmap);
-                myFragment.setBitmapToMemoryCache(mPath, bitmap);
+                FileListFragment.setBitmapToMemoryCache(mPath, bitmap);
             }
         }
 

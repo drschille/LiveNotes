@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context="no.designsolutions.livenotes.MainActivity">
+    tools:context="no.designsolutions.livenotes.SelectFileActivity">
 
     <include
         android:id="@+id/app_bar"
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="no.designsolutions.livenotes.myFragment"
+        android:name="no.designsolutions.livenotes.FileListFragment"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/app_bar"

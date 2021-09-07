@@ -1,16 +1,24 @@
 package no.designsolutions.livenotes;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,7 +36,9 @@ import java.util.concurrent.TimeUnit;
 
 import no.designsolutions.livenotes.util.PlayerService;
 
-public class myMediaPlayer extends AppCompatActivity {
+import static java.lang.String.format;
+
+public class MyMediaPlayer extends AppCompatActivity {
 
     static final int FILE_SELECT_CODE = 2;
     private ImageButton play;
@@ -39,6 +49,9 @@ public class myMediaPlayer extends AppCompatActivity {
     private TextView titleText;
     private MediaPlayer mPlayer;
     private static String cTitle;
+    private String currentPlaying;
+    private PlayerLogDbAdapter playerAdapter = new PlayerLogDbAdapter(MyMediaPlayer.this);
+    private static final String formatString = "%02d:%02d:%02d";
 
     private boolean mBound = false;
 
@@ -70,7 +83,7 @@ public class myMediaPlayer extends AppCompatActivity {
             play.setOnClickListener(new ImageButton.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Context context = getApplicationContext();
+                    Context context = MyMediaPlayer.this;
                     if (mPlayer.isPlaying()) {
                         mPlayer.pause();
                         play.setImageResource(R.drawable.ic_play_button);
@@ -88,10 +101,10 @@ public class myMediaPlayer extends AppCompatActivity {
                 }
             });
 
-            TLTextView = (TextView) findViewById(R.id.textTotalLength);
-            titleText = (TextView) findViewById(R.id.textTitle);
+            TLTextView = findViewById(R.id.textTotalLength);
+            titleText = findViewById(R.id.textTitle);
 
-            seekBar = (SeekBar) findViewById(R.id.seekBar);
+            seekBar = findViewById(R.id.seekBar);
 
 
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -129,7 +142,7 @@ public class myMediaPlayer extends AppCompatActivity {
                 long h = TimeUnit.MILLISECONDS.toHours(duration);
                 long m = TimeUnit.MILLISECONDS.toMinutes(duration) % 60;
                 long s = TimeUnit.MILLISECONDS.toSeconds(duration) % 60;
-                String totalLengthString = String.format("%02d:%02d:%02d", h, m, s);
+                String totalLengthString = format(formatString, h, m, s);
                 TLTextView.setText(totalLengthString);
 
                 if (mPlayer.isPlaying()) {
@@ -145,16 +158,23 @@ public class myMediaPlayer extends AppCompatActivity {
 
         }
 
+
         @Override
         public void onServiceDisconnected(ComponentName name) {
+
             mBound = false;
-            Toast.makeText(getApplicationContext(), "Service disconnected", Toast.LENGTH_LONG).show();
+            Toast.makeText(MyMediaPlayer.this, "Service disconnected", Toast.LENGTH_LONG).show();
         }
     };
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mBound) {
+            Long id = playerAdapter.updateData(currentPlaying, mPlayer.getCurrentPosition(), System.currentTimeMillis());
+            Log.d("DSDESIGN", "onActivityResult: " + id);
+        }
+
         unbindService(mConnection);
         mBound = false;
         mPlayer = null;
@@ -173,13 +193,11 @@ public class myMediaPlayer extends AppCompatActivity {
                 play.setBackgroundColor(Color.TRANSPARENT);
             }
 
-
             long duration = mPlayer.getDuration();
             long h = TimeUnit.MILLISECONDS.toHours(duration);
             long m = TimeUnit.MILLISECONDS.toMinutes(duration) % 60;
             long s = TimeUnit.MILLISECONDS.toSeconds(duration) % 60;
-            String totalLengthString = String.format("%02d:%02d:%02d", h, m, s);
-
+            String totalLengthString = String.format(formatString, h, m, s);
 
             TLTextView.setText(totalLengthString);
             updateSeeker(mPlayer.isPlaying());
@@ -192,7 +210,7 @@ public class myMediaPlayer extends AppCompatActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_player);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = findViewById(R.id.toolbar_notebooks);
         setSupportActionBar(toolbar);
 
 //        Intent serviceIntent = new Intent(getApplicationContext(), PlayerService.class);
@@ -205,26 +223,26 @@ public class myMediaPlayer extends AppCompatActivity {
         }
 
 
-        play = (ImageButton) findViewById(R.id.playButton);
-        ImageButton next = (ImageButton) findViewById(R.id.nextButton);
-        ImageButton prev = (ImageButton) findViewById(R.id.previosuButton);
+        play = findViewById(R.id.playButton);
+        ImageButton next = findViewById(R.id.nextButton);
+        ImageButton prev = findViewById(R.id.previosuButton);
 
         play.setBackgroundColor(Color.TRANSPARENT);
         next.setBackgroundColor(Color.TRANSPARENT);
         prev.setBackgroundColor(Color.TRANSPARENT);
 
-        timeText = (TextView) findViewById(R.id.playbackTime);
+        timeText = findViewById(R.id.playbackTime);
 
         timeText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(myMediaPlayer.this, TimeSelect.class));
+                startActivity(new Intent(MyMediaPlayer.this, TimeSelect.class));
 
             }
         });
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -253,7 +271,7 @@ public class myMediaPlayer extends AppCompatActivity {
         long m = TimeUnit.MILLISECONDS.toMinutes(curPos) % 60;
         long s = TimeUnit.MILLISECONDS.toSeconds(curPos) % 60;
         seekBar.setProgress(curPos);
-        String curPosString = String.format("%02d:%02d:%02d", h, m, s);
+        String curPosString = format(formatString, h, m, s);
         timeText.setText(curPosString);
         if (isPlaying) {
             seekHandler.postDelayed(run, 250);
@@ -262,7 +280,7 @@ public class myMediaPlayer extends AppCompatActivity {
 
     private void SelectFile() {
 
-        Intent selectFileIntent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent selectFileIntent = new Intent(getApplicationContext(), SelectFileActivity.class);
 
         startActivityForResult(selectFileIntent, FILE_SELECT_CODE);
     }
@@ -292,35 +310,104 @@ public class myMediaPlayer extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == FILE_SELECT_CODE && resultCode == RESULT_OK && data != null) {
 
-            String cFile = data.getStringExtra("filepath");
-            cTitle = data.getStringExtra("songtitle");
-            titleText.setText(cTitle);
+        if (checkPermissionWRITE_EXTERNAL_STORAGE(this)) {
 
-            File myFile = new File(cFile);
+            if (requestCode == FILE_SELECT_CODE && resultCode == RESULT_OK && data != null) {
 
-            //Initialize mPlayer
+                String cFile = data.getStringExtra("filepath");
+                cTitle = data.getStringExtra("songtitle");
+                titleText.setText(cTitle);
 
-            Intent intent = new Intent(getApplicationContext(), PlayerService.class);
-            startService(intent);
+                File myFile = new File(cFile);
 
-            try {
-                mPlayer.reset();
-                mPlayer.setDataSource(myFile.getPath());
-                mPlayer.prepare();
-                mPlayer.start();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.v(String.valueOf(R.string.app_name), e.getMessage());
+                Log.d("DSDESIGN", "" + mPlayer.getCurrentPosition());
+
+                if (currentPlaying != null) {
+                    Long id = playerAdapter.updateData(currentPlaying, mPlayer.getCurrentPosition(), System.currentTimeMillis());
+                    Log.d("DSDESIGN", "onActivityResult: " + id);
+                }
+                currentPlaying = cTitle;
+
+                long startPoint;
+                try {
+                    startPoint = playerAdapter.getData(currentPlaying);
+                } catch (Exception e) {
+                    Log.e("DSDESIGN", "onActivityResult: ", e);
+                    startPoint = 0;
+                }
+                if (startPoint == 0) {
+                    Log.d("DSDESIGN", "No Records found");
+                }
+
+                Intent intent = new Intent(getApplicationContext(), PlayerService.class);
+                startService(intent);
+
+                try {
+                    mPlayer.reset();
+                    mPlayer.setDataSource(myFile.getPath());
+                    mPlayer.prepare();
+                    mPlayer.seekTo((int) startPoint);
+                    mPlayer.start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.v(String.valueOf(R.string.app_name), e.getMessage());
+                }
+
+                seekBar.setMax(mPlayer.getDuration());
+                updateSeeker(mPlayer.isPlaying());
             }
-
-            seekBar.setMax(mPlayer.getDuration());
-            updateSeeker(mPlayer.isPlaying());
         }
-
     }
 
+    public static final int MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 124;
+
+    public void showDialog(final String msg, final Context context,
+                           final String permission) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
+        alertBuilder.setCancelable(true);
+        alertBuilder.setTitle("Permission necessary");
+        alertBuilder.setMessage(msg + " permission is necessary");
+        alertBuilder.setPositiveButton(android.R.string.yes,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions((Activity) context,
+                                new String[]{permission},
+                                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                    }
+                });
+        AlertDialog alert = alertBuilder.create();
+        alert.show();
+    }
+
+    public boolean checkPermissionWRITE_EXTERNAL_STORAGE(
+            final Context context) {
+        int currentAPIVersion = Build.VERSION.SDK_INT;
+        if (currentAPIVersion >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        (Activity) context,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    showDialog("Allow read and write to external storage", context,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+                } else {
+                    ActivityCompat
+                            .requestPermissions(
+                                    (Activity) context,
+                                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                }
+                return false;
+            } else {
+                return true;
+            }
+
+        } else {
+            return true;
+        }
+    }
 }
 
 

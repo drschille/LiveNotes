@@ -22,6 +22,7 @@ data class Notebook(
 data class Note(
     @ColumnInfo(name = "notebook_id") val notebookId: Int,
     @ColumnInfo(name = "note_id") val noteId: Int,
+    @ColumnInfo(name = "note_order") val noteOrder: Float,
     @ColumnInfo(name = "text") val text: String?,
     @ColumnInfo(name = "created_date") val createdDate: Date,
     @ColumnInfo(name = "modified_date") val modifiedDate: Date,
@@ -45,7 +46,7 @@ class TimestampConverters {
 
     @TypeConverter
     fun fromTimestampToString(timestamp: LinkedAudioTimeStamp?): String {
-        return """${timestamp?.time.toString()} ${timestamp?.file?.canonicalPath}"""
+        return "${timestamp?.time.toString()} ${timestamp?.file?.canonicalPath}"
     }
 
     @TypeConverter
@@ -77,7 +78,7 @@ interface NotebooksDao {
 
 @Dao
 interface NotesDao {
-    @Query("SELECT * FROM notes WHERE notebook_id = :notebookId")
+    @Query("SELECT * FROM notes WHERE notebook_id = :notebookId ORDER BY note_order ASC")
     fun loadAllNotesInNotebook(notebookId: Int): Array<Note>
 
     @Insert
@@ -85,6 +86,5 @@ interface NotesDao {
 
     @Update
     fun updateNote(note: Note)
-
 }
 

@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.NotebooksActivity"
+            android:name=".activities.NotebooksActivity2"
             android:exported="true"
             android:label="@string/title_activity_notebooks"
             android:theme="@style/AppTheme.NoActionBar" />
